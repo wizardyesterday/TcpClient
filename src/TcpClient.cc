@@ -68,7 +68,7 @@ TcpClient::TcpClient(char *ipAddressPtr,int port,bool *successPtr)
                      (struct sockaddr *)&peerAddress,
                       sizeof(peerAddress));
 
-    if (result == 0)
+    if (result < 0)
     {
       fprintf(stderr,"ERROR: connect()\n");
       *successPtr = false;
