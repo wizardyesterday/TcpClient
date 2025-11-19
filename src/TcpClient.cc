@@ -2,8 +2,9 @@
 // file name: TcpClient.cc
 //**********************************************************************
 
-#include "TcpClient.h"
 #include <stdio.h>
+#include <time.h>
+#include "TcpClient.h"
 
 /**************************************************************************
 
@@ -209,18 +210,62 @@ ssize_t TcpClient::sendData(void *bufferPtr,int bufferLength)
 ssize_t  TcpClient::receiveData(void *bufferPtr,int bufferLength)
 {
   ssize_t octetsReceived;
+  bool done;
+  int i;
   unsigned char *octetPtr;
+  struct timeval timeout;
+  fd_set readFds;
 
   // Default to nothing received.
   octetsReceived = 0;
+
+  // Clear before use.
+  FD_ZERO(&readFds);
 
   if (connectionIsEstablished())
   {
     // Reference the buffer in the octet context.
     octetPtr = (unsigned char *)bufferPtr;
 
-    // Read what's available.
-    octetsReceived = recv(socketDescriptor,octetPtr,bufferLength,0);
+    // Refer to the beginning of the receive buffer;
+    i = 0;
+
+    // Set up for loop entry.
+    done = false;
+
+    while (!done)
+    {
+      //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+      // This block of code is necessary when working with TCP.
+      //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+      FD_SET(socketDescriptor,&readFds);
+
+      // set up timeout value to 50000 microseconds
+      timeout.tv_sec = 5;
+      timeout.tv_usec = 0;
+
+      // wait and be nice to the system
+      select(socketDescriptor+1,&readFds,0,0,&timeout);
+      //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+
+
+      if(FD_ISSET(socketDescriptor,&readFds))
+      {
+        // Read what's available.
+        octetsReceived += recv(socketDescriptor,
+                               octetPtr,
+                               bufferLength,
+                               0);
+
+        // Advance to the next storage location.
+        octetPtr += octetsReceived;
+      } // if
+      else
+      {
+        // All data has been received, so bail out.
+        done = true;
+      } // else
+    } // while
   } // if
 
   return (octetsReceived);

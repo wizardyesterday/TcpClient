@@ -164,14 +164,14 @@ int main(int argc,char **argv)
                                       serverPort,
                                       &success);
 
-  if (!networkInterfacePtr->connectionIsEstablished())
+  if (!success)
   {
     fprintf(stderr,"Failed to establish link\n");
     return (-1);
   } // if
 
   // Display diags welcome messate.
-  octetCount = networkInterfacePtr->receiveData(networkInputBuffer,200);
+  octetCount = networkInterfacePtr->receiveData(networkInputBuffer,16000);
   printf("%s",networkInputBuffer);
 
   // Set up for loop entry.
@@ -180,7 +180,7 @@ int main(int argc,char **argv)
   while (!done)
   {
     // Read the data.
-    chPtr = gets(inputBuffer);
+    chPtr = fgets(inputBuffer,200,stdin);
 
     if (*chPtr == EOF)
     {
@@ -194,10 +194,9 @@ int main(int argc,char **argv)
         strlen(inputBuffer));
 
       // Read the data.
-      octetCount = networkInterfacePtr->receiveData(networkInputBuffer,200);
-      printf("octet count: %d\n",octetCount);
+      octetCount = networkInterfacePtr->receiveData(networkInputBuffer,16000);
       printf("%s",networkInputBuffer);
-    
+
     } // else
   } // while
 
