@@ -42,6 +42,9 @@ TcpClient::TcpClient(char *ipAddressPtr,int port,bool *successPtr)
   //  Defaault to failure result.
   *successPtr = false;
  
+  // Indicate not connected.
+  connected = false;
+
   // 1. Create socket.
   socketDescriptor = socket(AF_INET,SOCK_STREAM,0);
 
@@ -74,6 +77,11 @@ TcpClient::TcpClient(char *ipAddressPtr,int port,bool *successPtr)
       fprintf(stderr,"ERROR: connect()\n");
       *successPtr = false;
     } // if
+    else
+    {
+      // Indicat that a connection is established.
+      connected = true;
+    } // else
   } // if
  
 } // TcpClient
@@ -130,18 +138,8 @@ TcpClient::~TcpClient(void)
 **************************************************************************/
 bool TcpClient::connectionIsEstablished(void)
 {
-  bool status;
 
-  if (socketDescriptor > 0)
-  {
-    status = true;
-  } // if
-  else
-  {
-    status = false;
-  } // else
-
-  return (status);
+  return (connected);
  
 } // connectionIsEstablished
 
@@ -219,16 +217,10 @@ ssize_t  TcpClient::receiveData(void *bufferPtr,int bufferLength)
   // Default to nothing received.
   octetsReceived = 0;
 
-  // Clear before use.
-  FD_ZERO(&readFds);
-
   if (connectionIsEstablished())
   {
     // Reference the buffer in the octet context.
     octetPtr = (unsigned char *)bufferPtr;
-
-    // Refer to the beginning of the receive buffer;
-    i = 0;
 
     // Set up for loop entry.
     done = false;
@@ -238,11 +230,14 @@ ssize_t  TcpClient::receiveData(void *bufferPtr,int bufferLength)
       //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
       // This block of code is necessary when working with TCP.
       //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
+      // Clear before use.
+      FD_ZERO(&readFds);
+
       FD_SET(socketDescriptor,&readFds);
 
-      // set up timeout value to 50000 microseconds
-      timeout.tv_sec = 5;
-      timeout.tv_usec = 0;
+      // set up timeout value to 200 milliseconds.
+      timeout.tv_sec = 0;
+      timeout.tv_usec = 200000;
 
       // wait and be nice to the system
       select(socketDescriptor+1,&readFds,0,0,&timeout);

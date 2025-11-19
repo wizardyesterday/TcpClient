@@ -172,6 +172,9 @@ int main(int argc,char **argv)
 
   // Display diags welcome messate.
   octetCount = networkInterfacePtr->receiveData(networkInputBuffer,16000);
+
+  // Terminate the returned string, and print it.
+  networkInputBuffer[octetCount] = 0;
   printf("%s",networkInputBuffer);
 
   // Set up for loop entry.
@@ -195,6 +198,10 @@ int main(int argc,char **argv)
 
       // Read the data.
       octetCount = networkInterfacePtr->receiveData(networkInputBuffer,16000);
+
+      // Terminate the returned string, and print it.
+      networkInputBuffer[octetCount] = 0;
+ 
       printf("%s",networkInputBuffer);
 
     } // else

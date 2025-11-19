@@ -28,6 +28,7 @@ class TcpClient
   // Attributes
   int socketDescriptor;
   struct sockaddr_in peerAddress;
+  bool connected;
 };
 
 #endif // _TCPCLIENT_H_
