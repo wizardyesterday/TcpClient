@@ -3,20 +3,19 @@
 //**********************************************************************
 
 //*************************************************************************
-// This program provides the functionality of a UDP client.  The program
-// reads its input from stdin and sends a UDP datagram with the payload
+// This program provides the functionality of a TCP client.  The program
+// reads its input from stdin and sends a TDP datagram with the payload
 // equal to the contents of what was read from stdin.
 //
 // To run this program type,
 // 
-//     ./udpClient -p <listenPort> -m <maxPayloadLength>
+//     ./tcpClient -a <ipaddress> -p <port>
 //
 // where,
 //
-//    listenPort - the port number for which the server will listen.
+// ipaddress - The IP adress of the server for which to connect.
 //
-//    maxPayloadLength - The maximum amount of octets that will be
-//    sent in a UDP datagram.
+//    port - The server listen port.
 //*************************************************************************
 
 #include <stdio.h>
@@ -159,7 +158,7 @@ int main(int argc,char **argv)
     return (0);
   } // if
 
-  // Create UDP client object.
+  // Create TCP client object.
   networkInterfacePtr = new TcpClient(serverIpAddress,
                                       serverPort,
                                       &success);
