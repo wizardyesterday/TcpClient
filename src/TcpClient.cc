@@ -186,14 +186,14 @@ ssize_t TcpClient::sendData(void *bufferPtr,int bufferLength)
       // Send the octets over the TCP connection.
       octetsWritten = send(socketDescriptor,octetPtr,octetsRemaining,0);
 
-      // Update to account for the number of octets written.
-      octetsSent += octetsWritten;
-
       // We havw this much less to send over the network connection.
-      octetsRemaining -= octetsSent;
+      octetsRemaining -= octetsWritten;
 
       // Advance buffer pointer.
-      octetPtr += octetsSent;
+      octetPtr += octetsWritten;
+
+      // Update to account for the number of octets written.
+      octetsSent += octetsWritten;
     } // while
   } // if
 
