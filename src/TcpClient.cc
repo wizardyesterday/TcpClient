@@ -166,6 +166,8 @@ bool TcpClient::connectionIsEstablished(void)
 ssize_t TcpClient::sendData(void *bufferPtr,int bufferLength)
 {
   ssize_t octetsSent;
+  ssize_t octetsWritten;
+  ssize_t octetsRemaining;
   unsigned char *octetPtr;
 
   // Default to nothing sent.
@@ -176,8 +178,23 @@ ssize_t TcpClient::sendData(void *bufferPtr,int bufferLength)
     // Reference the buffer in the octet context.
     octetPtr = (unsigned char *)bufferPtr;
 
-    // Send the octets over the TCP connection.
-    octetsSent = send(socketDescriptor,octetPtr,bufferLength,0);
+    // Indicate that the whole buffer needs to be sent.
+    octetsRemaining = bufferLength;
+
+    while (octetsRemaining > 0)
+    {
+      // Send the octets over the TCP connection.
+      octetsWritten = send(socketDescriptor,octetPtr,octetsRemaining,0);
+
+      // Update to account for the number of octets written.
+      octetsSent += octetsWritten;
+
+      // We havw this much less to send over the network connection.
+      octetsRemaining -= octetsSent;
+
+      // Advance buffer pointer.
+      octetPtr += octetsSent;
+    } // while
   } // if
 
   return (octetsSent);
