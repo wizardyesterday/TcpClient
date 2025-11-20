@@ -209,7 +209,6 @@ ssize_t  TcpClient::receiveData(void *bufferPtr,int bufferLength)
 {
   ssize_t octetsReceived;
   bool done;
-  int i;
   unsigned char *octetPtr;
   struct timeval timeout;
   fd_set readFds;
