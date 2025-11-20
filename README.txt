@@ -27,7 +27,7 @@ server and port is the port number for which the server is listening.
 To build your own application, follow the example of the buildClient.sh
 script. If you're using a makefile, all you need to do is to inculde the
 header file path, and reference the source directory. The only files that
-you need are include/TcpClient.h and rc/TcpClient.cc.
+you need are include/TcpClient.h and src/TcpClient.cc.
 
 4.0 Summary
 I created this software because I wanted to creat software that usies
