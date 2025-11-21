@@ -38,6 +38,7 @@
 TcpClient::TcpClient(char *ipAddressPtr,int port,bool *successPtr)
 {
   int result;
+  struct sockaddr_in peerAddress;
 
   //  Defaault to failure result.
   *successPtr = false;
