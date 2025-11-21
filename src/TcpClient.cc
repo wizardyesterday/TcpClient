@@ -225,6 +225,7 @@ ssize_t TcpClient::sendData(void *bufferPtr,int bufferLength)
 ssize_t  TcpClient::receiveData(void *bufferPtr,int bufferLength)
 {
   ssize_t octetsReceived;
+  ssize_t octetsRead;
   bool done;
   unsigned char *octetPtr;
   struct timeval timeout;
@@ -259,17 +260,19 @@ ssize_t  TcpClient::receiveData(void *bufferPtr,int bufferLength)
       select(socketDescriptor+1,&readFds,0,0,&timeout);
       //_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/_/
 
-
       if(FD_ISSET(socketDescriptor,&readFds))
       {
         // Read what's available.
-        octetsReceived += recv(socketDescriptor,
+        octetsRead = recv(socketDescriptor,
                                octetPtr,
                                bufferLength,
                                0);
 
         // Advance to the next storage location.
-        octetPtr += octetsReceived;
+        octetPtr += octetsRead;
+
+        // Account for new received data.
+        octetsReceived += octetsRead;
       } // if
       else
       {
